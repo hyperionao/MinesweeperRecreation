@@ -22,82 +22,70 @@ public class GameBoard extends JPanel{
                 // Handle image errors! 
             }
         }
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            // Reset the game board and start a new game
+            resetGame();
+            }
+        });
     }
 
-    JButton restartButton = new JButton("Restart");
-    restartButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        // Reset the game board and start a new game
-        resetGame();
-        }
-    });
-
-    public GameBoard(Cell[][] cells) 
-    {
+    public GameBoard(Cell[][] cells) {
         this.cells = cells;
-
-        loadCellImages(); // load to cell images from files
-
-        addMouseListener(new MouseAdapter() 
-        {
+        loadCellImages(); // load cell images from files
+    
+        addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e)
-            {
+            public void mouseClicked(MouseEvent e) {
                 int x = e.getX() / Cell.CELL_SIZE;
                 int y = e.getY() / Cell.CELL_SIZE;
                 Cell cell = cells[y][x];
-
-                if (SwingUtilities.isLeftMouseButton(e))
-                {
-                    if (!cell.isFlagged())
-                    {
-
+    
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (!cell.isFlagged()) {
                         int col = e.getX() / Cell.CELL_SIZE;
                         int row = e.getY() / Cell.CELL_SIZE;
-
-                        if (col >= 0 && col < cells[0].length && row >= 0 && row < cells.length) 
-                        {
+    
+                        if (col >= 0 && col < cells[0].length && row >= 0 && row < cells.length) {
                             Cell clickedCell = cells[row][col];
-
-                            if (clickedCell.isMine())
-                            {
+    
+                            if (clickedCell.isMine()) {
                                 // Handle mine click (game over here)
-                                // end game, reveal all mines, and show a game over
-                                for (int row = 0; row < cells.length; row++) {
-                                    for (int col = 0; col < cells[0].length; col++) {
-                                        Cell cell = cells[row][col];
-                                        if (cell.isMine()) {
-                                            cell.reveal();
+                                // End the game, reveal all mines, and show a game over screen
+                                for (int r = 0; r < cells.length; r++) {
+                                    for (int c = 0; c < cells[0].length; c++) {
+                                        Cell mineCell = cells[r][c];
+                                        if (mineCell.isMine()) {
+                                            mineCell.reveal();
                                         }
                                     }
                                 }
-                                repaint(); 
-                            } else 
-                            {
+                                repaint();
+                            } else {
                                 clickedCell.reveal();
                                 repaint(); // redraw board
-
-                                if (clickedCell.isEmpty())
-                                {
+    
+                                if (clickedCell.isEmpty()) {
                                     revealAdjacentEmptyCells(cells, row, col);
                                 }
-
-                                if (checkWinCondition())
-                                {
-                                    //Handle win condition here (show a win screen me thinks)
+    
+                                if (checkWinCondition()) {
+                                    // Handle win condition here (show a win screen, for example)
                                 }
                             }
-                        // handle left click to reveal cells
                         }
                     }
                 } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //Handle right-click on cell (flag/unflag)
+                    // Handle right-click on cell (flag/unflag)
                     cell.toggleFlag();
                     repaint();
                 }
             }
         });
     }
+    
     
     private void revealAdjacentEmptyCells(Cell[][] cells, int row, int col) {
         // Define the possible adjacent directions
@@ -172,8 +160,3 @@ public class GameBoard extends JPanel{
 
     
 }
-
-
-
-
-// keep track of what we want Cell.java to be about, note CELL_SIZE, .getCellState, .toggleFlag, .isFlagged, .reveal(), 
